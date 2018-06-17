@@ -1,0 +1,119 @@
+<ResourceDictionary
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:controls="clr-namespace:Eurydice.Windows.App.Controls"
+    xmlns:converters="clr-namespace:Eurydice.Windows.App.Controls.Converters">
+
+    <Style TargetType="{x:Type controls:SunburstChart}">
+        <Style.Resources>
+            <converters:SliceWidthCalculator x:Key="SliceWidthCalculator" />
+        </Style.Resources>
+        <Setter Property="SliceWidth">
+            <Setter.Value>
+                <MultiBinding Converter="{StaticResource SliceWidthCalculator}">
+                    <Binding Path="ActualWidth" RelativeSource="{RelativeSource Mode=Self}" />
+                    <Binding Path="ActualHeight" RelativeSource="{RelativeSource Mode=Self}" />
+                    <Binding Path="Depth" RelativeSource="{RelativeSource Mode=Self}" />
+                </MultiBinding>
+            </Setter.Value>
+        </Setter>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type controls:SunburstChart}">
+                    <ItemsPresenter />
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style TargetType="{x:Type controls:SunburstChartItem}">
+        <Style.Resources>
+            <converters:IncrementConverter x:Key="IncrementConverter" />
+            <converters:InnerRadiusCalculator x:Key="InnerRadiusCalculator" />
+            <converters:OuterRadiusCalculator x:Key="OuterRadiusCalculator" />
+            <converters:OriginCalculator x:Key="OriginCalculator" />
+            <converters:ValueToAngleConverter x:Key="ValueToAngleConverter" />
+            <converters:VisibilityCalculator x:Key="VisibilityCalculator" />
+        </Style.Resources>
+        <Setter Property="Level"
+                Value="{Binding Level, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type controls:SunburstChartItem}, AncestorLevel=1}, FallbackValue=0, Converter={StaticResource IncrementConverter}}" />
+        <Setter Property="StartAngle"
+                Value="{Binding Start, Converter={StaticResource ValueToAngleConverter}}" />
+        <Setter Property="EndAngle"
+                Value="{Binding End, Converter={StaticResource ValueToAngleConverter}}" />
+        <Setter Property="Visibility">
+            <Setter.Value>
+                <MultiBinding Converter="{StaticResource VisibilityCalculator}">
+                    <Binding Path="Depth"
+                             RelativeSource="{RelativeSource Mode=FindAncestor, AncestorType={x:Type controls:SunburstChart}}" />
+                    <Binding Path="Level" RelativeSource="{RelativeSource Self}" />
+                </MultiBinding>
+            </Setter.Value>
+        </Setter>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type controls:SunburstChartItem}">
+                    <Canvas>
+                        <controls:SunburstChartSlice
+                            StartAngle="{Binding StartAngle, RelativeSource={RelativeSource TemplatedParent}}"
+                            EndAngle="{Binding EndAngle, RelativeSource={RelativeSource TemplatedParent}}"
+                            Stroke="{Binding Background, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type controls:SunburstChart}}}"
+                            StrokeThickness="2"
+                            Command="{Binding DrilldownCommand}"
+                            ToolTipService.InitialShowDelay="0">
+                            <controls:SunburstChartSlice.Style>
+                                <Style TargetType="controls:SunburstChartSlice">
+                                    <Setter Property="Fill" Value="{Binding Brush}" />
+                                    <Style.Triggers>
+                                        <Trigger Property="IsMouseOver" Value="True">
+                                            <Setter Property="Fill" Value="{Binding HoverBrush}" />
+                                        </Trigger>
+                                        <Trigger Property="IsMouseOver" Value="False">
+                                            <Setter Property="Fill" Value="{Binding Brush}" />
+                                        </Trigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </controls:SunburstChartSlice.Style>
+                            <controls:SunburstChartSlice.Origin>
+                                <MultiBinding Converter="{StaticResource OriginCalculator}">
+                                    <Binding Path="ActualWidth"
+                                             RelativeSource="{RelativeSource Mode=FindAncestor, AncestorType={x:Type controls:SunburstChart}}" />
+                                    <Binding Path="ActualHeight"
+                                             RelativeSource="{RelativeSource Mode=FindAncestor, AncestorType={x:Type controls:SunburstChart}}" />
+                                </MultiBinding>
+                            </controls:SunburstChartSlice.Origin>
+                            <controls:SunburstChartSlice.InnerRadius>
+                                <MultiBinding Converter="{StaticResource InnerRadiusCalculator}">
+                                    <Binding Path="SliceWidth"
+                                             RelativeSource="{RelativeSource Mode=FindAncestor, AncestorType={x:Type controls:SunburstChart}}" />
+                                    <Binding Path="Level" RelativeSource="{RelativeSource TemplatedParent}" />
+                                </MultiBinding>
+                            </controls:SunburstChartSlice.InnerRadius>
+                            <controls:SunburstChartSlice.OuterRadius>
+                                <MultiBinding Converter="{StaticResource OuterRadiusCalculator}">
+                                    <Binding Path="SliceWidth"
+                                             RelativeSource="{RelativeSource Mode=FindAncestor, AncestorType={x:Type controls:SunburstChart}}" />
+                                    <Binding Path="Level" RelativeSource="{RelativeSource TemplatedParent}" />
+                                </MultiBinding>
+                            </controls:SunburstChartSlice.OuterRadius>
+                            <controls:SunburstChartSlice.ToolTip>
+                                <ContentPresenter
+                                    Name="PART_Header"
+                                    FocusManager.IsFocusScope="True"
+                                    Content="{TemplateBinding HeaderedContentControl.Header}"
+                                    ContentTemplate="{TemplateBinding HeaderedContentControl.HeaderTemplate}"
+                                    ContentStringFormat="{TemplateBinding HeaderedItemsControl.HeaderStringFormat}"
+                                    ContentTemplateSelector="{TemplateBinding HeaderedItemsControl.HeaderTemplateSelector}"
+                                    ContentSource="Header"
+                                    HorizontalAlignment="{TemplateBinding Control.HorizontalContentAlignment}"
+                                    VerticalAlignment="{TemplateBinding Control.VerticalContentAlignment}"
+                                    SnapsToDevicePixels="{TemplateBinding UIElement.SnapsToDevicePixels}" />
+                            </controls:SunburstChartSlice.ToolTip>
+                        </controls:SunburstChartSlice>
+                        <ItemsPresenter />
+                    </Canvas>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+</ResourceDictionary>

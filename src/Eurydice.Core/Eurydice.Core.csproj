@@ -1,0 +1,84 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{7D64E7DC-8979-4F41-A235-21FA70E1BDC8}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Eurydice.Core</RootNamespace>
+    <AssemblyName>Eurydice.Core</AssemblyName>
+    <TargetFrameworkVersion>v4.7.1</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Common\FileSystemEntryId.cs" />
+    <Compile Include="IFileSizeEstimator.cs" />
+    <Compile Include="Indexer\DirectoryEntryInfo.cs" />
+    <Compile Include="Indexer\FileEntryInfo.cs" />
+    <Compile Include="Indexer\FileSystemEntryInfo.cs" />
+    <Compile Include="Indexer\IFileSystemIndexer.cs" />
+    <Compile Include="Model\DirectoryEntry.cs" />
+    <Compile Include="Model\Events\FileSystemModelEvent.cs" />
+    <Compile Include="Model\Events\FileSystemModelUnrecoverableErrorEvent.cs" />
+    <Compile Include="Model\Events\NodeChangedEvent.cs" />
+    <Compile Include="Model\Events\NodeCreatedEvent.cs" />
+    <Compile Include="Model\Events\NodeDeletedEvent.cs" />
+    <Compile Include="Model\Events\NodeRenamedEvent.cs" />
+    <Compile Include="Model\FileEntry.cs" />
+    <Compile Include="Model\FileSystemModelEntry.cs" />
+    <Compile Include="Model\FileSystemModel.cs" />
+    <Compile Include="Model\FileSystemModelStage.cs" />
+    <Compile Include="Model\Events\FileSystemModelStateChangedEvent.cs" />
+    <Compile Include="Model\FileSystemModelState.cs" />
+    <Compile Include="Pipeline\IPipelineConsumer.cs" />
+    <Compile Include="Pipeline\IPipelineProducer.cs" />
+    <Compile Include="Pipeline\IPipelineStage.cs" />
+    <Compile Include="Watcher\Events\BufferOverflowEvent.cs" />
+    <Compile Include="Watcher\Events\DirectoryCreatedEvent.cs" />
+    <Compile Include="Watcher\Events\DirectoryRenamedEvent.cs" />
+    <Compile Include="Watcher\Events\FileSystemEntryDeletedEvent.cs" />
+    <Compile Include="Watcher\Events\FileChangedEvent.cs" />
+    <Compile Include="Watcher\Events\FileCreatedEvent.cs" />
+    <Compile Include="Watcher\Events\FileRenamedEvent.cs" />
+    <Compile Include="Watcher\Events\FileSystemEvent.cs" />
+    <Compile Include="Watcher\Events\FileSystemUnrecoverableErrorEvent.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Properties\" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+         Other similar extension points exist, see Microsoft.Common.targets.
+    <Target Name="BeforeBuild">
+    </Target>
+    <Target Name="AfterBuild">
+    </Target>
+    -->
+</Project>
