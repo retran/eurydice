@@ -3,6 +3,7 @@ using Eurydice.Core.Common;
 using Eurydice.Core.Indexer;
 using Eurydice.Core.Model;
 using Xunit;
+using static System.FormattableString;
 
 namespace Eurydice.Core.Tests
 {
@@ -10,23 +11,23 @@ namespace Eurydice.Core.Tests
     {
         public FileSystemModelTests()
         {
-            _fileSystemModel = new FileSystemModel("ROOT", _rootId);
+            _fileSystemModel = new FileSystemModel("ROOT", _rootId, 10, 0.1);
 
             _fileSystemModel.NodeCreated += (id, parentId, name) =>
             {
-                _receivedEvents.Add($"CREATED {id}, {parentId}, {name}");
+                _receivedEvents.Add(Invariant($"CREATED {id}, {parentId}, {name}"));
             };
 
             _fileSystemModel.NodeChanged += (id, size, start, end) =>
             {
-                _receivedEvents.Add($"CHANGED {id}, {size}, {start}, {end}");
+                _receivedEvents.Add(Invariant($"CHANGED {id}, {size}, {start:0.###}, {end:0.###}"));
             };
 
-            _fileSystemModel.NodeDeleted += id => { _receivedEvents.Add($"DELETED {id}"); };
+            _fileSystemModel.NodeDeleted += id => { _receivedEvents.Add(Invariant($"DELETED {id}")); };
 
             _fileSystemModel.NodeRenamed += (name, id, newId) =>
             {
-                _receivedEvents.Add($"RENAMED {name}, {id}, {newId}");
+                _receivedEvents.Add(Invariant($"RENAMED {name}, {id}, {newId}"));
             };
 
             _fileSystemModel.Initialize();
@@ -46,12 +47,13 @@ namespace Eurydice.Core.Tests
             _fileSystemModel.CreateFile(new FileSystemEntryId(@"ROOT\small.txt"), _rootId, "small.txt", 1024);
             _fileSystemModel.Update();
 
+            var log = string.Join("\r\n", _receivedEvents);
             Assert.Equal(
                 "CHANGED ROOT, 33792, 0, 1\r\n" +
-                "CHANGED ROOT\\big.txt, 32768, 0, 0.96969696969697\r\n" +
+                "CHANGED ROOT\\big.txt, 32768, 0, 0.97\r\n" +
                 "CREATED ROOT\\%%hidden%%, ROOT, \r\n" +
-                "CHANGED ROOT\\%%hidden%%, 1024, 0.96969696969697, 1",
-                string.Join("\r\n", _receivedEvents));
+                "CHANGED ROOT\\%%hidden%%, 1024, 0.97, 1",
+                log);
         }
 
         [Fact]
@@ -66,13 +68,14 @@ namespace Eurydice.Core.Tests
             _fileSystemModel.ChangeFileSize(id, 32768);
             _fileSystemModel.Update();
 
+            var log = string.Join("\r\n", _receivedEvents);
             Assert.Equal(
                 "CREATED ROOT\\small.txt, ROOT, small.txt\r\n" +
                 "CHANGED ROOT, 65536, 0, 1\r\n" +
                 "CHANGED ROOT\\big.txt, 32768, 0, 0.5\r\n" +
                 "CHANGED ROOT\\small.txt, 32768, 0.5, 1\r\n" +
                 "DELETED ROOT\\%%hidden%%",
-                string.Join("\r\n", _receivedEvents));
+                log);
         }
 
         [Fact]
@@ -87,13 +90,14 @@ namespace Eurydice.Core.Tests
             _fileSystemModel.ChangeFileSize(id, 1024);
             _fileSystemModel.Update();
 
+            var log = string.Join("\r\n", _receivedEvents);
             Assert.Equal(
                 "DELETED ROOT\\small.txt\r\n" +
                 "CHANGED ROOT, 33792, 0, 1\r\n" +
-                "CHANGED ROOT\\big.txt, 32768, 0, 0.96969696969697\r\n" +
+                "CHANGED ROOT\\big.txt, 32768, 0, 0.97\r\n" +
                 "CREATED ROOT\\%%hidden%%, ROOT, \r\n" +
-                "CHANGED ROOT\\%%hidden%%, 1024, 0.96969696969697, 1",
-                string.Join("\r\n", _receivedEvents));
+                "CHANGED ROOT\\%%hidden%%, 1024, 0.97, 1",
+                log);
         }
 
         [Fact]
@@ -109,10 +113,11 @@ namespace Eurydice.Core.Tests
             _fileSystemModel.DeleteEntry(folderId);
             _fileSystemModel.Update();
 
+            var log = string.Join("\r\n", _receivedEvents);
             Assert.Equal(
                 "DELETED ROOT\\folder\r\n" +
                 "CHANGED ROOT, 0, 0, 1",
-                string.Join("\r\n", _receivedEvents));
+                log);
         }
 
         [Fact]
@@ -129,11 +134,12 @@ namespace Eurydice.Core.Tests
             _fileSystemModel.DeleteEntry(folderId);
             _fileSystemModel.Update();
 
+            var log = string.Join("\r\n", _receivedEvents);
             Assert.Equal(
                 "DELETED ROOT\\folder\r\n" +
                 "DELETED ROOT\\folder\\file.txt\r\n" +
                 "CHANGED ROOT, 0, 0, 1",
-                string.Join("\r\n", _receivedEvents));
+                log);
         }
 
 
@@ -155,10 +161,11 @@ namespace Eurydice.Core.Tests
             _fileSystemModel.RenameDirectory("folder2", folderId, new FileSystemEntryId(@"ROOT\folder2"));
             _fileSystemModel.Update();
 
+            var log = string.Join("\r\n", _receivedEvents);
             Assert.Equal(
                 "RENAMED big2.txt, ROOT\\folder\\big.txt, ROOT\\folder\\big2.txt\r\n" +
                 "RENAMED folder2, ROOT\\folder, ROOT\\folder2",
-                string.Join("\r\n", _receivedEvents));
+                log);
         }
 
         [Fact]
@@ -170,6 +177,7 @@ namespace Eurydice.Core.Tests
             _fileSystemModel.CreateFile(new FileSystemEntryId(@"ROOT\folder\file.txt"), folderId, "file.txt", 1024);
             _fileSystemModel.Update();
 
+            var log = string.Join("\r\n", _receivedEvents);
             Assert.Equal(
                 "CREATED ROOT, , ROOT\r\n" +
                 "CHANGED ROOT, 0, 0, 1\r\n" +
@@ -178,7 +186,7 @@ namespace Eurydice.Core.Tests
                 "CHANGED ROOT\\folder, 1024, 0, 1\r\n" +
                 "CREATED ROOT\\folder\\file.txt, ROOT\\folder, file.txt\r\n" +
                 "CHANGED ROOT\\folder\\file.txt, 1024, 0, 1",
-                string.Join("\r\n", _receivedEvents));
+                log);
         }
 
         [Fact]
@@ -219,6 +227,7 @@ namespace Eurydice.Core.Tests
                 });
             _fileSystemModel.Update();
 
+            var log = string.Join("\r\n", _receivedEvents);
             Assert.Equal(
                 "CREATED ROOT, , ROOT\r\n" +
                 "CHANGED ROOT, 0, 0, 1\r\n" +
@@ -231,17 +240,17 @@ namespace Eurydice.Core.Tests
                 "CREATED ROOT\\photos\\3.jpg, ROOT\\photos, 3.jpg\r\n" +
                 "CREATED ROOT\\photos\\5.jpg, ROOT\\photos, 5.jpg\r\n" +
                 "CHANGED ROOT, 75776, 0, 1\r\n" +
-                "CHANGED ROOT\\temp, 66560, 0, 0.878378378378378\r\n" +
-                "CHANGED ROOT\\photos, 9216, 0.878378378378378, 1\r\n" +
-                "CHANGED ROOT\\temp\\swap.swp, 65536, 0, 0.984615384615385\r\n" +
+                "CHANGED ROOT\\temp, 66560, 0, 0.878\r\n" +
+                "CHANGED ROOT\\photos, 9216, 0.878, 1\r\n" +
+                "CHANGED ROOT\\temp\\swap.swp, 65536, 0, 0.985\r\n" +
                 "CREATED ROOT\\temp\\%%hidden%%, ROOT\\temp, \r\n" +
-                "CHANGED ROOT\\temp\\%%hidden%%, 1024, 0.984615384615385, 1\r\n" +
-                "CHANGED ROOT\\photos\\2.jpg, 3072, 0, 0.333333333333333\r\n" +
-                "CHANGED ROOT\\photos\\1.jpg, 2048, 0.333333333333333, 0.555555555555556\r\n" +
-                "CHANGED ROOT\\photos\\4.jpg, 2048, 0.555555555555556, 0.777777777777778\r\n" +
-                "CHANGED ROOT\\photos\\3.jpg, 1024, 0.777777777777778, 0.888888888888889\r\n" +
-                "CHANGED ROOT\\photos\\5.jpg, 1024, 0.888888888888889, 1",
-                string.Join("\r\n", _receivedEvents));
+                "CHANGED ROOT\\temp\\%%hidden%%, 1024, 0.985, 1\r\n" +
+                "CHANGED ROOT\\photos\\2.jpg, 3072, 0, 0.333\r\n" +
+                "CHANGED ROOT\\photos\\1.jpg, 2048, 0.333, 0.556\r\n" +
+                "CHANGED ROOT\\photos\\4.jpg, 2048, 0.556, 0.778\r\n" +
+                "CHANGED ROOT\\photos\\3.jpg, 1024, 0.778, 0.889\r\n" +
+                "CHANGED ROOT\\photos\\5.jpg, 1024, 0.889, 1",
+                log);
         }
 
         [Fact]
@@ -294,6 +303,7 @@ namespace Eurydice.Core.Tests
                 });
             _fileSystemModel.Update();
 
+            var log = string.Join("\r\n", _receivedEvents);
             Assert.Equal(
                 "CREATED ROOT\\photos\\6.jpg, ROOT\\photos, 6.jpg\r\n" +
                 "CREATED ROOT\\photos\\7.jpg, ROOT\\photos, 7.jpg\r\n" +
@@ -302,14 +312,14 @@ namespace Eurydice.Core.Tests
                 "DELETED ROOT\\photos\\3.jpg\r\n" +
                 "DELETED ROOT\\photos\\5.jpg\r\n" +
                 "CHANGED ROOT, 82944, 0, 1\r\n" +
-                "CHANGED ROOT\\temp, 66560, 0, 0.802469135802469\r\n" +
-                "CHANGED ROOT\\photos, 16384, 0.802469135802469, 1\r\n" +
-                "CHANGED ROOT\\photos\\7.jpg, 5120, 0, 0.3125\r\n" +
-                "CHANGED ROOT\\photos\\8.jpg, 4096, 0.3125, 0.5625\r\n" +
-                "CHANGED ROOT\\photos\\4.jpg, 3072, 0.5625, 0.75\r\n" +
+                "CHANGED ROOT\\temp, 66560, 0, 0.802\r\n" +
+                "CHANGED ROOT\\photos, 16384, 0.802, 1\r\n" +
+                "CHANGED ROOT\\photos\\7.jpg, 5120, 0, 0.313\r\n" +
+                "CHANGED ROOT\\photos\\8.jpg, 4096, 0.313, 0.563\r\n" +
+                "CHANGED ROOT\\photos\\4.jpg, 3072, 0.563, 0.75\r\n" +
                 "CHANGED ROOT\\photos\\6.jpg, 2048, 0.75, 0.875\r\n" +
                 "CHANGED ROOT\\photos\\1.jpg, 2048, 0.875, 1",
-                string.Join("\r\n", _receivedEvents));
+                log);
         }
 
         [Fact]
@@ -322,14 +332,15 @@ namespace Eurydice.Core.Tests
             _fileSystemModel.CreateFile(new FileSystemEntryId(@"ROOT\big.txt"), _rootId, "big.txt", 32768);
             _fileSystemModel.Update();
 
+            var log = string.Join("\r\n", _receivedEvents);
             Assert.Equal(
                 "CREATED ROOT\\big.txt, ROOT, big.txt\r\n" +
                 "CHANGED ROOT, 33792, 0, 1\r\n" +
                 "DELETED ROOT\\small.txt\r\n" +
-                "CHANGED ROOT\\big.txt, 32768, 0, 0.96969696969697\r\n" +
+                "CHANGED ROOT\\big.txt, 32768, 0, 0.97\r\n" +
                 "CREATED ROOT\\%%hidden%%, ROOT, \r\n" +
-                "CHANGED ROOT\\%%hidden%%, 1024, 0.96969696969697, 1",
-                string.Join("\r\n", _receivedEvents));
+                "CHANGED ROOT\\%%hidden%%, 1024, 0.97, 1",
+                log);
         }
 
         [Fact]
@@ -343,10 +354,11 @@ namespace Eurydice.Core.Tests
             _fileSystemModel.ChangeFileSize(id, 2048);
             _fileSystemModel.Update();
 
+            var log = string.Join("\r\n", _receivedEvents);
             Assert.Equal(
                 "CHANGED ROOT, 2048, 0, 1\r\n" +
                 "CHANGED ROOT\\small.txt, 2048, 0, 1",
-                string.Join("\r\n", _receivedEvents));
+                log);
         }
     }
 }

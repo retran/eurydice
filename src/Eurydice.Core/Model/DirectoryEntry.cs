@@ -281,7 +281,7 @@ namespace Eurydice.Core.Model
 
         private bool IsShouldBeVisible(FileSystemModelEntry entry)
         {
-            return entry.Size != 0 && Size / Model.MaxVisibleEntries <= entry.Size;
+            return entry.Size != 0 && Size * Model.EntrySizeThreshold <= entry.Size;
         }
 
         private int GetMaxVisibleNodes()

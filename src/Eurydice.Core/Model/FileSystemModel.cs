@@ -29,11 +29,14 @@ namespace Eurydice.Core.Model
 
         private readonly FileSystemEntryId _rootId;
 
+        internal readonly double EntrySizeThreshold;
+
         internal readonly int MaxVisibleEntries;
 
-        public FileSystemModel(string rootNodeName, FileSystemEntryId rootId, int maxVisibleEntries = 10)
+        public FileSystemModel(string rootNodeName, FileSystemEntryId rootId, int maxVisibleEntries = 10, double entrySizeTreshold = 0.05)
         {
             MaxVisibleEntries = maxVisibleEntries;
+            EntrySizeThreshold = entrySizeTreshold;
 
             _rootId = rootId;
             _root = new DirectoryEntry(this, rootId, null, rootNodeName);
