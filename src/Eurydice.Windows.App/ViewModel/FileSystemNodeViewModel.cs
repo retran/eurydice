@@ -24,7 +24,7 @@ namespace Eurydice.Windows.App.ViewModel
         private long _size;
         private double _start;
 
-        public FileSystemNodeViewModel(ICommand drilldownCommand, FileSystemEntryId id, FileSystemNodeViewModel parent,
+        public FileSystemNodeViewModel(ICommand navigateCommand, FileSystemEntryId id, FileSystemNodeViewModel parent,
             string name)
         {
             _id = id;
@@ -36,7 +36,7 @@ namespace Eurydice.Windows.App.ViewModel
 
             _nodes = new ObservableCollection<FileSystemNodeViewModel>();
 
-            DrilldownCommand = drilldownCommand ?? throw new ArgumentNullException(nameof(drilldownCommand));
+            NavigateToCommand = navigateCommand ?? throw new ArgumentNullException(nameof(navigateCommand));
         }
 
         public FileSystemEntryId Id
@@ -73,7 +73,7 @@ namespace Eurydice.Windows.App.ViewModel
 
         public bool IsRoot { get; set; }
 
-        public ICommand DrilldownCommand { get; }
+        public ICommand NavigateToCommand { get; }
 
         public double Start
         {

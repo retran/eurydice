@@ -59,7 +59,7 @@
                             EndAngle="{Binding EndAngle, RelativeSource={RelativeSource TemplatedParent}}"
                             Stroke="{Binding Background, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type controls:SunburstChart}}}"
                             StrokeThickness="2"
-                            Command="{Binding DrilldownCommand}"
+                            Command="{Binding NavigateToCommand}"
                             ToolTipService.InitialShowDelay="0">
                             <controls:SunburstChartSlice.Style>
                                 <Style TargetType="controls:SunburstChartSlice">

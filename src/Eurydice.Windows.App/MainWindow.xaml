@@ -39,7 +39,7 @@
             </ListView.ItemsPanel>
             <ListView.ItemTemplate>
                 <DataTemplate>
-                    <Button Command="{Binding DrilldownCommand}" CommandParameter="{Binding Path=.}"
+                    <Button Command="{Binding NavigateToCommand}" CommandParameter="{Binding Path=.}"
                             Content="{Binding Name}" Padding="5" />
                 </DataTemplate>
             </ListView.ItemTemplate>

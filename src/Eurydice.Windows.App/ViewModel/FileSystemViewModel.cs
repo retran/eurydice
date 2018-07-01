@@ -14,15 +14,11 @@ namespace Eurydice.Windows.App.ViewModel
     /// </summary>
     internal sealed class FileSystemViewModel : ViewModelBase
     {
-        public delegate void NodeChangedEventHandler(FileSystemEntryId id);
-
-        public delegate void NodeCreatedEventHandler(FileSystemEntryId id);
-
         public delegate void NodeDeletedEventHandler(FileSystemEntryId id);
 
         public delegate void UnrecoverableErrorEventHandler(Exception exception);
 
-        private readonly ICommand _drilldownCommand;
+        private readonly ICommand _navigateToCommand;
 
         private readonly Dictionary<FileSystemEntryId, FileSystemNodeViewModel> _nodeLookupTable =
             new Dictionary<FileSystemEntryId, FileSystemNodeViewModel>();
@@ -32,9 +28,9 @@ namespace Eurydice.Windows.App.ViewModel
 
         private FileSystemModelState _state;
 
-        public FileSystemViewModel(ICommand drilldownCommand)
+        public FileSystemViewModel(ICommand navigateToCommand)
         {
-            _drilldownCommand = drilldownCommand ?? throw new ArgumentNullException(nameof(drilldownCommand));
+            _navigateToCommand = navigateToCommand ?? throw new ArgumentNullException(nameof(navigateToCommand));
         }
 
         public ObservableCollection<FileSystemNodeViewModel> Root
@@ -146,7 +142,7 @@ namespace Eurydice.Windows.App.ViewModel
         {
             if (nodeCreatedEvent.ParentId.Equals(FileSystemEntryId.Empty))
             {
-                var node = new FileSystemNodeViewModel(_drilldownCommand, nodeCreatedEvent.Id, null,
+                var node = new FileSystemNodeViewModel(_navigateToCommand, nodeCreatedEvent.Id, null,
                     nodeCreatedEvent.Name);
                 _nodeLookupTable.Add(node.Id, node);
                 _root.Add(node);
@@ -156,7 +152,7 @@ namespace Eurydice.Windows.App.ViewModel
                 if (!_nodeLookupTable.TryGetValue(nodeCreatedEvent.ParentId, out var parentNode)) return;
 
                 var name = nodeCreatedEvent.Id.IsHiddenEntriesNode ? "other files" : nodeCreatedEvent.Name;
-                var node = new FileSystemNodeViewModel(_drilldownCommand, nodeCreatedEvent.Id, parentNode, name);
+                var node = new FileSystemNodeViewModel(_navigateToCommand, nodeCreatedEvent.Id, parentNode, name);
                 _nodeLookupTable.Add(node.Id, node);
                 parentNode.Nodes.Add(node);
             }

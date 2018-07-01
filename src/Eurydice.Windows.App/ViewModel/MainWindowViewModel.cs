@@ -92,6 +92,10 @@ namespace Eurydice.Windows.App.ViewModel
             if (_disposed) return;
 
             Stop();
+
+            _disposed = true;
+            OpenFolderCommand.Dispose();
+            CloseFolderCommand.Dispose();
         }
 
         public void Start(string path)
@@ -134,7 +138,7 @@ namespace Eurydice.Windows.App.ViewModel
                 _pipeline?.Cancel();
                 _fileSystemEventProducer?.Dispose();
                 _fileSystemModelStage?.Dispose();
-                _pipeline.Dispose();
+                _pipeline?.Dispose();
                 _fileSystemViewModel.ErrorReceived -= OnErrorReceived;
                 _fileSystemViewModel.NodeDeleted -= OnNodeDeleted;
                 Running = false;

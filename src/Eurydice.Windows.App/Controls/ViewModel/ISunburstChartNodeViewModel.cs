@@ -10,7 +10,7 @@ namespace Eurydice.Windows.App.Controls.ViewModel
     internal interface ISunburstChartNodeViewModel<T>
         where T : ISunburstChartNodeViewModel<T>
     {
-        ICommand DrilldownCommand { get; }
+        ICommand NavigateToCommand { get; }
 
         double Start { get; }
         double End { get; }
