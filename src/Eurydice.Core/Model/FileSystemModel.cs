@@ -33,7 +33,7 @@ namespace Eurydice.Core.Model
 
         internal readonly int MaxVisibleEntries;
 
-        public FileSystemModel(string rootNodeName, FileSystemEntryId rootId, int maxVisibleEntries = 10, double entrySizeTreshold = 0.05)
+        public FileSystemModel(string rootNodeName, FileSystemEntryId rootId, int maxVisibleEntries = 10, double entrySizeTreshold = 0.1)
         {
             MaxVisibleEntries = maxVisibleEntries;
             EntrySizeThreshold = entrySizeTreshold;

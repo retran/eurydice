@@ -22,6 +22,7 @@ namespace Eurydice.Windows.App.ViewModel
         private readonly IPipelineStage<FileSystemEvent, FileSystemModelEvent> _stage;
         private readonly BlockingCollection<FileSystemModelEvent> _stageEventBuffer;
         private readonly Action _updateModel;
+        private readonly TimeSpan _updateTimeTreshold = TimeSpan.FromMilliseconds(10);
         private bool _disposed;
         private Task _producerTask;
         private bool _running;
@@ -58,11 +59,10 @@ namespace Eurydice.Windows.App.ViewModel
 
         private void OnTick(object sender, EventArgs e)
         {
-            var count = 0;
+            var dt = DateTime.UtcNow;
             while (_consumer.TryConsume(_stageEventBuffer))
             {
-                count++;
-                if (count > 500) break;
+                if (DateTime.UtcNow - dt > _updateTimeTreshold) break;
             }
 
             _updateModel();

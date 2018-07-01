@@ -249,7 +249,6 @@ namespace Eurydice.Core.Model
                     break;
 
                 case FileSystemEntryDeletedEvent entryDeletedEvent:
-                    // TODO root directory deletion
                     _fileSystemModel.DeleteEntry(entryDeletedEvent.Id);
                     break;
 

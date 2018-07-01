@@ -24,7 +24,6 @@ namespace Eurydice.Windows.NTFS
             var root = new DirectoryInfo(path);
             queue.Enqueue(root);
 
-            // TODO detect symlinks
             while (queue.Count > 0)
             {
                 var current = queue.Dequeue();
